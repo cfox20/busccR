@@ -1,0 +1,8 @@
+/* Custom CSS for Baylor Presentation */
+.reveal .slide-number {
+  color: #154734; /* Baylor Green */
+}
+
+.reveal .footer {
+  color: #154734;
+}

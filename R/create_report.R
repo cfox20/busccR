@@ -18,17 +18,17 @@
 #' \dontrun{
 #' create_report("project_analysis", "New Project", "Dr. Client", c("Student A", "Student B"))
 #' }
-create_report <- function(file_name, title, client, authors, 
-                          email = "rodney_strudivant@baylor.edu", 
-                          phone = "(254) 710-1663", 
+create_report <- function(file_name, title, client, authors,
+                          email = "rodney_strudivant@baylor.edu",
+                          phone = "(254) 710-1663",
                           keywords = NULL) {
   # Ensure file_name ends with .qmd
   if (!grepl("\\.qmd$", file_name, ignore.case = TRUE)) {
     file_name <- paste0(file_name, ".qmd")
   }
-  
-  # Prepare authors for params (list format for YAML is handled by R's yaml parsing if we used it, 
-  # but here we are constructing string manually. 
+
+  # Prepare authors for params (list format for YAML is handled by R's yaml parsing if we used it,
+  # but here we are constructing string manually.
   # For the params block, we want a list if multiple, or string if single.
   authors_list_str <- paste0("[", paste(paste0("\"", authors, "\""), collapse = ", "), "]")
 
@@ -41,6 +41,18 @@ create_report <- function(file_name, title, client, authors,
 
   # Escape underscores in email
   email <- gsub("_", "\\\\_", email)
+
+  # Check and copy logo
+  if (!dir.exists("images")) {
+    dir.create("images")
+  }
+
+  logo_source <- system.file("images", "bscc_logo_stacked.png", package = "busccR")
+  if (logo_source == "") {
+    warning("Logo not found in package. Using placeholder or ensuring local file exists.")
+  } else {
+    file.copy(logo_source, "images/bscc_logo_stacked.png", overwrite = FALSE)
+  }
 
   # Create the file content
   content <- paste0(
@@ -77,17 +89,34 @@ create_report <- function(file_name, title, client, authors,
     "  \\coordinate (NE) at ($(current page.north east)+(-1.2cm,-1.5cm)$);\n",
     "  \\coordinate (SW) at ($(current page.south west)+(1.2cm,1.5cm)$);\n",
     "  \\coordinate (SE) at ($(current page.south east)+(-1.2cm,1.5cm)$);\n\n",
-    "  % choose where the left border \"gap\" should be\n",
-    "  % (tweak these two offsets to surround your title vertically)\n",
-    "  \\coordinate (GapTop)    at ($(NW)+(0,-4cm)$);   % end of upper left segment\n",
-    "  \\coordinate (GapBottom) at ($(SW)+(0,13.5cm)$);    % start of lower left segment\n\n",
+    "  % Main Content in a Node to measure height for gap\n",
+    "  % Positioned relative to NW. The xshift puts it slightly right of the border.\n",
+    "  \\node[anchor=north west, inner sep=0pt, align=left] (ContentNode) at ($(NW) + (0.8cm, -3cm)$) {%\n",
+    "    \\begin{minipage}{0.7\\textwidth}\n",
+    "      {\\bfseries\\fontsize{26}{32}\\selectfont\n",
+    "        ", toupper(title), "\\par}\n\n",
+    "      \\vspace{0.25cm}\n\n",
+    "      {\\small Authors: ", paste(authors, collapse = ", "), "\\par}\n\n",
+    "      \\vspace{0.25cm}\n\n",
+    "      {\\small Client: ", client, "\\par}\n\n",
+    "      ", keywords_tex, "\n",
+    "      \\vspace{0.25cm}\n\n",
+    "      \\today\\par\n",
+    "    \\end{minipage}%\n",
+    "  };\n\n",
+    "  % Calculate Gap coordinates based on ContentNode\n",
+    "  % We split the calculation to avoid complex calc syntax issues\n",
+    "  \\coordinate (TitleTop) at (NW |- ContentNode.north);\n",
+    "  \\coordinate (TitleBottom) at (NW |- ContentNode.south);\n",
+    "  \\coordinate (GapTop)    at ($(TitleTop) + (0, 0.5cm)$);\n",
+    "  \\coordinate (GapBottom) at ($(TitleBottom) + (0, -0.5cm)$);\n\n",
     "  % draw top border\n",
     "  \\draw[line width=0.4pt] (NW) -- (NE);\n",
     "  % draw right border\n",
     "  \\draw[line width=0.4pt] (NE) -- (SE);\n",
     "  % draw bottom border\n",
     "  \\draw[line width=0.4pt] (SE) -- (SW);\n",
-    "  % draw left border with a gap around the title\n",
+    "  % draw left border with dynamic gap\n",
     "  \\draw[line width=0.4pt] (NW) -- (GapTop);\n",
     "  \\draw[line width=0.4pt] (GapBottom) -- (SW);\n\n",
     "% contact info bottom-left (inside frame)\n",
@@ -104,23 +133,6 @@ create_report <- function(file_name, title, client, authors,
     "    \\includegraphics[width=5cm]{images/bscc_logo_stacked.png}\n",
     "  };\n",
     "\\end{tikzpicture}\n\n",
-    "% ------- main content block (title + author info) -------\n\n",
-    "\\vspace*{2.5cm}         % move content down\n",
-    "\\hspace*{-1.2cm}% move content right so it aligns with inside of left border\n",
-    "\\begin{minipage}[t]{0.7\\textwidth}\n\n",
-    "  \\vspace{1.5cm} % adjust to taste\n\n",
-    "  % big bold title, flush with border\n",
-    "  {\\bfseries\\fontsize{26}{32}\\selectfont\n",
-    "    ", toupper(title), "\\par}\n\n",
-    "  \\vspace{0.25cm}\n\n",
-    "  {\\small Authors: ", paste(authors, collapse=', '), "\\par}\n\n",
-    "  \\vspace{0.25cm}\n\n",
-    "  {\\small Client: ", client, "\\par}\n\n",
-    keywords_tex,
-    "  \\vspace{0.25cm}\n\n",
-    "  \\today\\par\n\n",
-    "\n",
-    "\\end{minipage}\n\n",
     "\\end{titlepage}\n",
     "\\clearpage\n",
     "\\tableofcontents\n",
@@ -134,11 +146,10 @@ create_report <- function(file_name, title, client, authors,
     "\\newpage\n\n",
     "# Apppendix \n"
   )
-  
+
   # Write to file
   writeLines(content, file_name)
-  
+
   message("Created report: ", file_name)
   invisible(file_name)
 }
-

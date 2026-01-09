@@ -107,22 +107,43 @@ get_box_root <- function() {
     "config.json"
   )
 
+  # ---- config missing: prompt interactively ----
   if (!file.exists(cfg_file)) {
-    stop(
-      "Box root is not set. Run set_box_root() first.",
-      call. = FALSE
-    )
+
+    if (!interactive()) {
+      stop(
+        "Box root is not set and this session is non-interactive.\n",
+        "Run set_box_root() in an interactive session first.",
+        call. = FALSE
+      )
+    }
+
+    message("Box root is not set. Please select the Statistical Consulting Center Box folder.")
+    set_box_root()
   }
 
+  # ---- read config ----
   cfg <- jsonlite::read_json(cfg_file, simplifyVector = TRUE)
 
+  # ---- configured path no longer exists ----
   if (!dir.exists(cfg$box_root)) {
-    stop(
-      "Configured Box root directory no longer exists:\n",
-      cfg$box_root,
-      call. = FALSE
+
+    if (!interactive()) {
+      stop(
+        "Configured Box root directory no longer exists:\n",
+        cfg$box_root,
+        call. = FALSE
+      )
+    }
+
+    message(
+      "The configured Box root directory no longer exists.\n",
+      "Please reselect the Statistical Consulting Center Box folder."
     )
+    set_box_root()
+    cfg <- jsonlite::read_json(cfg_file, simplifyVector = TRUE)
   }
 
   normalizePath(cfg$box_root, winslash = "/", mustWork = TRUE)
 }
+

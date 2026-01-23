@@ -34,6 +34,24 @@ jobs:
         run: pkgdown::build_site(dest_dir = "docs")
         shell: Rscript {0}
 
+      - name: Diagnose inputs and outputs
+        run: |
+          echo "Commit being built:"
+          git rev-parse HEAD
+
+          echo "README.md first 40 lines:"
+          sed -n '1,40p' README.md || true
+
+          echo "Vignettes directory:"
+          ls -la vignettes || true
+
+          echo "Built site files:"
+          ls -la docs || true
+
+          echo "Homepage built from pkgdown (first 40 lines):"
+          sed -n '1,40p' docs/index.html || true
+
+
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

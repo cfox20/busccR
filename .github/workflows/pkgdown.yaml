@@ -45,23 +45,8 @@ jobs:
             local::.
 
       - name: Build pkgdown site
-        run: pkgdown::build_site(dest_dir = "docs")
+        run: pkgdown::build_site()
         shell: Rscript {0}
-
-      - name: Verify site output
-        run: |
-          echo "Commit being built: $(git rev-parse HEAD)"
-          echo "Top-level files:"
-          ls -la
-
-          echo "Docs output:"
-          ls -la docs || true
-
-          echo "Require docs/index.html to exist:"
-          test -f docs/index.html
-
-          echo "Homepage snippet:"
-          sed -n '1,40p' docs/index.html || true
 
       - name: Configure Pages
         uses: actions/configure-pages@v5

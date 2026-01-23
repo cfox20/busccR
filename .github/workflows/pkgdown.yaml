@@ -31,7 +31,7 @@ jobs:
           needs: website
 
       - name: Build site
-        run: pkgdown::build_site()
+        run: pkgdown::build_site(dest_dir = "docs")
         shell: Rscript {0}
 
       - uses: actions/configure-pages@v5

@@ -1,0 +1,27 @@
+---
+title: "getting_started"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{getting_started}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Installation
+
+```{r, eval=FALSE}
+# devtools::install_github("cfox20/busccR")
+```
+
+
+```{r setup}
+# library(busccR)
+```
+

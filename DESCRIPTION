@@ -1,15 +1,21 @@
 Package: busccR
-Title: What the Package Does (One Line, Title Case)
+Title: Baylor University Statistical Consulting Center Project Management
 Version: 0.0.0.9000
-Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+Authors@R: c(
+    person("Caleb", "Fox", email = "caleb_fox2@baylor.edu", role = c("aut", "cre")),
+    person("Thomas", "Reinke", email = "thomas_reinke1@baylor.edu", role = c("aut"))
+    )
+Description: An R package to support the work of the Baylor University Statistical Consulting Center with project management.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
 URL: https://github.com/cfox20/busccR, https://cfox20.github.io/busccR/
 BugReports: https://github.com/cfox20/busccR/issues
+Imports:
+    rstudioapi,
+    jsonlite,
+    utils
 Suggests: 
     knitr,
     rmarkdown,

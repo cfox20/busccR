@@ -23,11 +23,9 @@
 #'
 #' @export
 set_box_root <- function() {
-
   # ---- Step 1: user-facing instruction ----
   if (requireNamespace("rstudioapi", quietly = TRUE) &&
-      rstudioapi::isAvailable()) {
-
+    rstudioapi::isAvailable()) {
     rstudioapi::showDialog(
       title = "Select Box Folder",
       message = "Select the local file path to the Statistical Consulting Center Box folder."
@@ -44,18 +42,14 @@ set_box_root <- function() {
   path <- NULL
 
   if (requireNamespace("rstudioapi", quietly = TRUE) &&
-      rstudioapi::isAvailable()) {
-
+    rstudioapi::isAvailable()) {
     path <- rstudioapi::selectDirectory(
       caption = "Select the Statistical Consulting Center Box folder"
     )
-
   } else if (.Platform$OS.type == "windows") {
-
     path <- utils::choose.dir(
       caption = "Select the Statistical Consulting Center Box folder"
     )
-
   } else {
     message("Please select any file within the Box folder (directory selection may not be available).")
     path <- dirname(utils::file.choose())
@@ -89,8 +83,6 @@ set_box_root <- function() {
 }
 
 
-
-
 #' Get the configured Box root folder
 #'
 #' Returns the Box root directory previously set with
@@ -101,7 +93,6 @@ set_box_root <- function() {
 #'
 #' @export
 get_box_root <- function() {
-
   cfg_file <- file.path(
     tools::R_user_dir("consultingpkg", which = "config"),
     "config.json"
@@ -109,7 +100,6 @@ get_box_root <- function() {
 
   # ---- config missing: prompt interactively ----
   if (!file.exists(cfg_file)) {
-
     if (!interactive()) {
       stop(
         "Box root is not set and this session is non-interactive.\n",
@@ -127,7 +117,6 @@ get_box_root <- function() {
 
   # ---- configured path no longer exists ----
   if (!dir.exists(cfg$box_root)) {
-
     if (!interactive()) {
       stop(
         "Configured Box root directory no longer exists:\n",
@@ -146,4 +135,3 @@ get_box_root <- function() {
 
   normalizePath(cfg$box_root, winslash = "/", mustWork = TRUE)
 }
-

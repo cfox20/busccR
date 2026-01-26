@@ -4,12 +4,20 @@
 \alias{get_box_root}
 \title{Get the configured Box root folder}
 \usage{
-get_box_root()
+get_box_root(error_if_missing = TRUE, allow_interactive = interactive())
+}
+\arguments{
+\item{error_if_missing}{Logical. If \code{TRUE} (default), the function throws
+an error (or prompts in interactive sessions) if the path is not set.
+If \code{FALSE}, it returns \code{NULL}.}
+
+\item{allow_interactive}{Logical. If \code{TRUE} (default), the function will
+prompt the user to set the Box root if it is missing and the session is interactive.
+Set to \code{FALSE} to force an error in tests or scripts.}
 }
 \value{
-A character string containing the normalized Box root path.
+A character string containing the normalized path, or \code{NULL}.
 }
 \description{
-Returns the Box root directory previously set with
-\code{set_box_root()}.
+Retrieves the stored path to the Statistical Consulting Center Box folder.
 }

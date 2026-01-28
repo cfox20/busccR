@@ -25,6 +25,16 @@ This package is intended for internal use by BUSCC consultants and trainees.
 
 ---
 
+## Installation
+
+You can install the current version of mariner from [GitHub](https://github.com/cfox20/busccR) with:
+
+```r
+# install.packages("pak")
+pak::pak("cfox20/busccR")
+
+```
+
 ## Getting Started
 
 If you are new to the package, check out the reference [website](https://cfox20.github.io/busccR/index.html). The best place to begin is the [**Getting Started**](https://cfox20.github.io/busccR/articles/getting_started.html) guide.

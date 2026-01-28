@@ -5,3 +5,6 @@
 ^pkgdown$
 ^\.github$
 ^LICENSE\.md$
+^build_package\.R$
+^images$
+^quarto-assets$

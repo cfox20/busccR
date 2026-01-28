@@ -59,10 +59,16 @@ create_project <- function(
     stop("`project_name` must be provided.", call. = FALSE)
   }
   if (missing(department) || !nzchar(department)) {
-    stop("`department` must be provided (used to form the project ID).", call. = FALSE)
+    stop(
+      "`department` must be provided (used to form the project ID).",
+      call. = FALSE
+    )
   }
   if (missing(contact) || !nzchar(contact)) {
-    stop("`contact` must be provided (used to form the project ID).", call. = FALSE)
+    stop(
+      "`contact` must be provided (used to form the project ID).",
+      call. = FALSE
+    )
   }
 
   # ---- resolve Box root ----
@@ -105,7 +111,9 @@ create_project <- function(
   # ---- prompt user to choose project directory (must be inside box_root) ----
   project_abs <- NULL
 
-  if (requireNamespace("rstudioapi", quietly = TRUE) && rstudioapi::isAvailable()) {
+  if (
+    requireNamespace("rstudioapi", quietly = TRUE) && rstudioapi::isAvailable()
+  ) {
     rstudioapi::showDialog(
       title = "Select Project Folder",
       message = "Select the local file path to the project folder within the Statistical Consulting Center Box root.",
@@ -121,12 +129,23 @@ create_project <- function(
       caption = "Select the project folder (must be inside the SCC Box root)"
     )
   } else {
-    message("Select any file within the project folder (must be inside the SCC Box root).")
-    project_abs <- dirname(utils::file.choose())
+    if (!interactive()) {
+      stop(
+        "In non-interactive sessions, you must provide a valid `project_path` argument.",
+        call. = FALSE
+      )
+    }
+    message(
+      "Select any file within the project folder (must be inside the SCC Box root)."
+    )
+    project_abs <- dirname(file.choose())
   }
 
   if (is.null(project_abs) || !nzchar(project_abs)) {
-    stop("No project directory selected. Project was not created.", call. = FALSE)
+    stop(
+      "No project directory selected. Project was not created.",
+      call. = FALSE
+    )
   }
 
   project_abs <- normalizePath(project_abs, winslash = "/", mustWork = TRUE)
@@ -140,8 +159,11 @@ create_project <- function(
   if (!startsWith(proj_prefix, root_prefix)) {
     stop(
       "Selected project folder is not inside the configured Box root.\n",
-      "Box root: ", box_root_norm, "\n",
-      "Selected: ", project_abs,
+      "Box root: ",
+      box_root_norm,
+      "\n",
+      "Selected: ",
+      project_abs,
       call. = FALSE
     )
   }
@@ -264,14 +286,22 @@ update_project <- function(
       stop("No project records found.", call. = FALSE)
     }
 
-    if (requireNamespace("rstudioapi", quietly = TRUE) &&
-      rstudioapi::isAvailable()) {
+    if (
+      requireNamespace("rstudioapi", quietly = TRUE) &&
+        rstudioapi::isAvailable()
+    ) {
       registry_file <- rstudioapi::selectFile(
         caption = "Select a project to update",
         path = registry_dir
       )
     } else {
-      registry_file <- utils::file.choose()
+      if (!interactive()) {
+        stop(
+          "In non-interactive sessions, please provide the `id` argument.",
+          call. = FALSE
+        )
+      }
+      registry_file <- file.choose()
     }
 
     if (!nzchar(registry_file)) {
@@ -282,8 +312,13 @@ update_project <- function(
   }
 
   # ---- nothing to do guard ----
-  if (is.null(status) && is.null(keywords) && is.null(methods) &&
-    is.null(abstract) && is.null(project_path)) {
+  if (
+    is.null(status) &&
+      is.null(keywords) &&
+      is.null(methods) &&
+      is.null(abstract) &&
+      is.null(project_path)
+  ) {
     stop(
       "Nothing to update. Provide at least one field to change.",
       call. = FALSE
@@ -332,12 +367,17 @@ update_project <- function(
   # ---- update project path ----
   if (!is.null(project_path)) {
     if (!interactive() && identical(project_path, "choose")) {
-      stop("Cannot choose a project path in a non-interactive session.", call. = FALSE)
+      stop(
+        "Cannot choose a project path in a non-interactive session.",
+        call. = FALSE
+      )
     }
 
     if (identical(project_path, "choose")) {
-      if (requireNamespace("rstudioapi", quietly = TRUE) &&
-        rstudioapi::isAvailable()) {
+      if (
+        requireNamespace("rstudioapi", quietly = TRUE) &&
+          rstudioapi::isAvailable()
+      ) {
         new_abs <- rstudioapi::selectDirectory(
           caption = "Select the new project folder (must be inside Box root)"
         )
@@ -346,7 +386,13 @@ update_project <- function(
           caption = "Select the new project folder (must be inside Box root)"
         )
       } else {
-        new_abs <- dirname(utils::file.choose())
+        if (!interactive()) {
+          stop(
+            "Cannot choose a folder interactively in this session.",
+            call. = FALSE
+          )
+        }
+        new_abs <- dirname(file.choose())
       }
 
       if (!nzchar(new_abs)) {
@@ -365,8 +411,11 @@ update_project <- function(
     if (!startsWith(proj_prefix, root_prefix)) {
       stop(
         "Selected project folder is not inside the Box root.\n",
-        "Box root: ", box_norm, "\n",
-        "Selected: ", new_abs,
+        "Box root: ",
+        box_norm,
+        "\n",
+        "Selected: ",
+        new_abs,
         call. = FALSE
       )
     }
@@ -382,8 +431,10 @@ update_project <- function(
 
   # ---- concurrency check ----
   if (!overwrite) {
-    if (!is.na(mtime_before) &&
-      file.info(registry_file)$mtime != mtime_before) {
+    if (
+      !is.na(mtime_before) &&
+        file.info(registry_file)$mtime != mtime_before
+    ) {
       stop(
         "Project record changed on disk during update.\n",
         "Re-run update_project() or set overwrite = TRUE.",
@@ -482,21 +533,33 @@ complete_project <- function(
       stop("No project records found.", call. = FALSE)
     }
 
-    if (requireNamespace("rstudioapi", quietly = TRUE) &&
-      rstudioapi::isAvailable()) {
+    if (
+      requireNamespace("rstudioapi", quietly = TRUE) &&
+        rstudioapi::isAvailable()
+    ) {
       registry_file <- rstudioapi::selectFile(
         caption = "Select a project to complete",
         path = registry_dir
       )
     } else {
-      registry_file <- utils::file.choose()
+      if (!interactive()) {
+        stop(
+          "In non-interactive sessions, please provide the `id` argument.",
+          call. = FALSE
+        )
+      }
+      registry_file <- file.choose()
     }
 
     if (!nzchar(registry_file)) {
       stop("No project selected.", call. = FALSE)
     }
 
-    registry_file <- normalizePath(registry_file, winslash = "/", mustWork = TRUE)
+    registry_file <- normalizePath(
+      registry_file,
+      winslash = "/",
+      mustWork = TRUE
+    )
     id <- sub("\\.json$", "", basename(registry_file))
   }
 
@@ -504,7 +567,10 @@ complete_project <- function(
   if (!inherits(end_date, "Date")) {
     end_date <- as.Date(end_date)
     if (is.na(end_date)) {
-      stop("`end_date` must be a Date or coercible to Date (YYYY-MM-DD).", call. = FALSE)
+      stop(
+        "`end_date` must be a Date or coercible to Date (YYYY-MM-DD).",
+        call. = FALSE
+      )
     }
   }
   end_date_chr <- as.character(end_date)
@@ -541,7 +607,9 @@ complete_project <- function(
   )
 
   if (nzchar(methods_input)) {
-    rec$methods <- normalize_vec(strsplit(methods_input, ",", fixed = TRUE)[[1]])
+    rec$methods <- normalize_vec(strsplit(methods_input, ",", fixed = TRUE)[[
+      1
+    ]])
   } else {
     if (length(existing_methods) == 0) {
       stop(
@@ -560,8 +628,10 @@ complete_project <- function(
 
   # ---- optimistic concurrency check ----
   if (!overwrite) {
-    if (!is.na(mtime_before) &&
-      file.info(registry_file)$mtime != mtime_before) {
+    if (
+      !is.na(mtime_before) &&
+        file.info(registry_file)$mtime != mtime_before
+    ) {
       stop(
         "Project record changed on disk during completion.\n",
         "Re-run complete_project() or set overwrite = TRUE.",
@@ -620,10 +690,18 @@ build_registry <- function(overwrite = FALSE) {
 
   registry_dir <- file.path(box_root, "project_registry")
   if (!dir.exists(registry_dir)) {
-    stop("Project registry folder does not exist:\n", registry_dir, call. = FALSE)
+    stop(
+      "Project registry folder does not exist:\n",
+      registry_dir,
+      call. = FALSE
+    )
   }
 
-  json_files <- list.files(registry_dir, pattern = "\\.json$", full.names = TRUE)
+  json_files <- list.files(
+    registry_dir,
+    pattern = "\\.json$",
+    full.names = TRUE
+  )
   if (length(json_files) == 0) {
     stop("No project JSON files found in project_registry.", call. = FALSE)
   }
@@ -701,12 +779,20 @@ build_registry <- function(overwrite = FALSE) {
   }
 
   preferred_order <- c(
-    "id", "project_name", "term", "status",
-    "start_date", "end_date",
-    "department", "organization", "contact",
+    "id",
+    "project_name",
+    "term",
+    "status",
+    "start_date",
+    "end_date",
+    "department",
+    "organization",
+    "contact",
     "category",
     "consultants",
-    "keywords", "methods", "topics",
+    "keywords",
+    "methods",
+    "topics",
     "abstract",
     "project_path",
     "notes"
@@ -717,23 +803,23 @@ build_registry <- function(overwrite = FALSE) {
     txt <- read_text(f)
 
     rec <- list(
-      id           = json_get_scalar(txt, "id"),
+      id = json_get_scalar(txt, "id"),
       project_name = json_get_scalar(txt, "project_name"),
-      term         = json_get_scalar(txt, "term"),
-      status       = json_get_scalar(txt, "status"),
-      start_date   = json_get_scalar(txt, "start_date"),
-      end_date     = json_get_scalar(txt, "end_date"),
-      department   = json_get_scalar(txt, "department"),
+      term = json_get_scalar(txt, "term"),
+      status = json_get_scalar(txt, "status"),
+      start_date = json_get_scalar(txt, "start_date"),
+      end_date = json_get_scalar(txt, "end_date"),
+      department = json_get_scalar(txt, "department"),
       organization = json_get_scalar(txt, "organization"),
-      contact      = json_get_scalar(txt, "contact"),
-      category     = json_get_scalar(txt, "category"),
-      abstract     = json_get_scalar(txt, "abstract"),
+      contact = json_get_scalar(txt, "contact"),
+      category = json_get_scalar(txt, "category"),
+      abstract = json_get_scalar(txt, "abstract"),
       project_path = json_get_scalar(txt, "project_path"),
-      notes        = json_get_scalar(txt, "notes"),
-      consultants  = scalar_chr(json_get_array(txt, "consultants")),
-      keywords     = scalar_chr(json_get_array(txt, "keywords")),
-      methods      = scalar_chr(json_get_array(txt, "methods")),
-      topics       = scalar_chr(json_get_array(txt, "topics"))
+      notes = json_get_scalar(txt, "notes"),
+      consultants = scalar_chr(json_get_array(txt, "consultants")),
+      keywords = scalar_chr(json_get_array(txt, "keywords")),
+      methods = scalar_chr(json_get_array(txt, "methods")),
+      topics = scalar_chr(json_get_array(txt, "topics"))
     )
 
     # Fallback id from filename
@@ -743,16 +829,23 @@ build_registry <- function(overwrite = FALSE) {
     }
 
     # Force all fields to single character scalars (prevents list-columns)
-    for (nm in names(rec)) rec[[nm]] <- scalar_chr(rec[[nm]])
+    for (nm in names(rec)) {
+      rec[[nm]] <- scalar_chr(rec[[nm]])
+    }
 
     rec
   })
 
   # ---- ensure uniform columns ----
-  all_names <- unique(c(preferred_order, unlist(lapply(records, names), use.names = FALSE)))
+  all_names <- unique(c(
+    preferred_order,
+    unlist(lapply(records, names), use.names = FALSE)
+  ))
 
   records_filled <- lapply(records, function(rec) {
-    for (nm in setdiff(all_names, names(rec))) rec[[nm]] <- NA_character_
+    for (nm in setdiff(all_names, names(rec))) {
+      rec[[nm]] <- NA_character_
+    }
     rec[all_names]
   })
 

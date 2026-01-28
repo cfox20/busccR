@@ -4,29 +4,20 @@
 \alias{set_box_root}
 \title{Set the Box root folder for the Statistical Consulting Center}
 \usage{
-set_box_root()
+set_box_root(path = NULL)
+}
+\arguments{
+\item{path}{Optional. A character string specifying the path to the Box root.
+If \code{NULL} (the default), a directory selection dialog will be opened.}
 }
 \value{
 Invisibly returns the normalized path to the selected Box root directory.
 }
 \description{
-Prompts the user with a dialog instructing them to select the local
-filesystem path to the Statistical Consulting Center Box folder, then
-opens a directory chooser. The selected folder path is stored in a
-user-level configuration file for reuse by other package functions.
+Configure the local path to the Statistical Consulting Center Box folder.
+The path is stored in a user-specific configuration file.
 }
 \details{
-In RStudio, this function displays a modal dialog first. After the user
-clicks "Next", it opens a folder selection window.
-
-Outside of RStudio, the function prints an informational message and
-uses an OS-native selection method when available.
-
-The configuration is stored per-user and does not affect other users.
-}
-\examples{
-\dontrun{
-set_box_root()
-}
-
+On macOS, the Box Drive path is typically:
+\code{/Users/$USER/Library/CloudStorage/Box-Box}
 }

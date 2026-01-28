@@ -1,7 +1,7 @@
 # busccR
 
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
-[![R-CMD-check](https://github.com/cfox20/busccR/actions/workflows/r.yml/badge.svg)](https://github.com/cfox20/busccR/actions/workflows/r.yml)
+[![R-CMD-check](https://github.com/cfox20/busccR/actions/workflows/rcmd.yaml/badge.svg)](https://github.com/cfox20/busccR/actions/workflows/rcmd.yaml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Welcome to the **Baylor Statistical Science Consulting Center (BUSCC)**.

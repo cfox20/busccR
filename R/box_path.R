@@ -13,7 +13,7 @@
 #' @return Invisibly returns the normalized path to the selected Box root directory.
 #' @export
 set_box_root <- function(path = NULL) {
-  # 1. If path is provided directly (programmatic use)
+  # 1. If path is provided directly
   if (!is.null(path)) {
     if (!dir.exists(path)) {
       stop("The provided directory does not exist: ", path, call. = FALSE)
@@ -37,7 +37,7 @@ set_box_root <- function(path = NULL) {
       )
     }
 
-    # Method A: RStudio API (Preferred)
+    # Method A: RStudio API
     if (
       requireNamespace("rstudioapi", quietly = TRUE) &&
         rstudioapi::isAvailable()
@@ -64,7 +64,7 @@ set_box_root <- function(path = NULL) {
       )
     }
 
-    # Method B: Windows Native (if Method A failed or wasn't available)
+    # Method B: Windows Native
     if (is.null(path) && .Platform$OS.type == "windows") {
       path <- utils::choose.dir(caption = "Select SCC Box Root Folder")
     }
